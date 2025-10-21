@@ -1,0 +1,75 @@
+package com.alperenavci.jwt;
+
+import java.security.Key;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+
+@Component
+public class JwtService {
+	
+	public static final String SECRET_KEY = "TjfDGy1YrySiX8cLt0Dq5IHyHl//SUD+54aJOh5uheY=";
+	
+	// Token üretir
+	public String generateToken(UserDetails userDetails) {
+		
+		//Token 'e Map eklemeye örnek:
+		Map<String, String> claimsMap = new HashMap<>();
+		claimsMap.put("role", "ADMIN");
+		
+		// Jwts: dependency ile gelen bir sınıf
+		// builder, sınıfın nesnesini oluşturur. 
+		// Diğer metotlar sürekli kendi sınıfını döndüğü için zincirleme set yapılıyor.
+		return Jwts.builder()
+		.setSubject(userDetails.getUsername()) // Token içindeki Username 'yi set eder.
+		.setClaims(claimsMap) // Token 'e map eklemek
+		.setIssuedAt(new Date()) // Tokenin oluşturulma zamanına erişip Jwts 'ye atar.
+		.setExpiration(new Date(System.currentTimeMillis() + 1000*60*60*2)) // Token bitiş süresidir. milisaniye cinsinden girilir.
+		.signWith(getKey(), SignatureAlgorithm.ES256) //Token oluşurken ve çözerken kullanılan bir key 'e ihtiyaç var.
+		.compact();
+	}
+	
+	//Token çözer
+	// Function<> sınıfı, bir metodun pointerini verip, kod içinde sonradan kullanmak diye düşün.
+	public <T> T exportToken(String token, Function<Claims, T> claimsFunction) {
+		Claims claims = Jwts.parserBuilder()
+		.setSigningKey(getKey()) // Key ile çözme işlemi
+		.build() // set zincirini kırıp bir alttaki koda uygun return yapıyor.
+		.parseClaimsJws(token).getBody(); // Tokenin body 'sini alır.
+		
+		return claimsFunction.apply(claims); // Alınan token body 'i çözer.
+	}
+	
+	
+	
+	// Java.security 'nin. .signWith 'in tanımlı olduğu 
+	// sınıfın metotuna gidip ihtiyacım olan paketi öğrendim.
+	public Key getKey() {
+		byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+		return Keys.hmacShaKeyFor(keyBytes); // Byte dizisini anahtara çevirir
+	}
+	
+	// Token içerisinden username 'yi al.
+	public String getUsernameByToken(String token) {
+		return exportToken(token, Claims::getSubject);
+	}
+	
+	// Token expired oldu mu?
+	public boolean isTokenExpired(String token) {
+		Date expiredDate = exportToken(token, Claims::getExpiration);
+		
+		// Bugünki zaman, expiredDate 'den küçükse hala geçerlidir.
+		return new Date().before(expiredDate);
+	}
+	
+}
