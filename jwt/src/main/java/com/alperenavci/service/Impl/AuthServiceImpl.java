@@ -1,4 +1,4 @@
-package com.alperenavci.service;
+package com.alperenavci.service.Impl;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +9,7 @@ import com.alperenavci.dto.DtoUser;
 import com.alperenavci.jwt.AuthRequest;
 import com.alperenavci.model.User;
 import com.alperenavci.repository.UserRepository;
+import com.alperenavci.service.IAuthService;
 
 @Service
 public class AuthServiceImpl implements IAuthService{
