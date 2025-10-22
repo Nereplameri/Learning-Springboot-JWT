@@ -1,0 +1,44 @@
+package com.alperenavci.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.alperenavci.jwt.JWTAuthenticationFilter;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+	
+	public static final String AUTHENTICATE = "/authenticate";
+	public static final String REGISTER = "/register";
+	
+	// AppConfig 'in metodunun bean 'ını enjekte ettik
+	@Autowired
+	private AuthenticationProvider authenticationProvider;
+	
+	// JWTAuthenticationFilter class 'ının bean 'ını enjekte ettik
+	@Autowired
+	private JWTAuthenticationFilter authenticationFilter;
+	
+	// Bütün konfigürasyonlar bu sınıfta yapılıyor.
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.csrf().disable()
+		.authorizeHttpRequests(request -> 
+		request.requestMatchers(AUTHENTICATE, REGISTER) // authenticate ve register adresine bir istek gelirse
+		.permitAll() // filitre katmanını görmezden gelerek al
+		.anyRequest() //Bu işlemin dışında kalmışları ...
+		.authenticated()) //... filitre içerisinden geçir.
+		.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+		.authenticationProvider(authenticationProvider) // AppConfig sınıfı ile bağlantı
+		.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class); // Oluşturduğumuz filter sınıfını kullanır
+		return http.build();
+	}
+}
