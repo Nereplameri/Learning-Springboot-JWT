@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.alperenavci.jwt.AuthEntryPoint;
 import com.alperenavci.jwt.JWTAuthenticationFilter;
 
 @Configuration
@@ -27,6 +28,9 @@ public class SecurityConfig {
 	@Autowired
 	private JWTAuthenticationFilter authenticationFilter;
 	
+	@Autowired
+	private AuthEntryPoint authEntryPoint;
+	
 	// Bütün konfigürasyonlar bu sınıfta yapılıyor.
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -36,9 +40,11 @@ public class SecurityConfig {
 		.permitAll() // filitre katmanını görmezden gelerek al
 		.anyRequest() //Bu işlemin dışında kalmışları ...
 		.authenticated()) //... filitre içerisinden geçir.
+		.exceptionHandling().authenticationEntryPoint(authEntryPoint).and()
 		.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 		.authenticationProvider(authenticationProvider) // AppConfig sınıfı ile bağlantı
 		.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class); // Oluşturduğumuz filter sınıfını kullanır
+		
 		return http.build();
 	}
 }
