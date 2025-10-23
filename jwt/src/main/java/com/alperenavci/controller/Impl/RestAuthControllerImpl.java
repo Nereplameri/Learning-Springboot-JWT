@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alperenavci.controller.IRestAuthController;
 import com.alperenavci.dto.DtoUser;
 import com.alperenavci.jwt.AuthRequest;
+import com.alperenavci.jwt.AuthResponse;
 import com.alperenavci.service.IAuthService;
 
 import jakarta.validation.Valid;
@@ -25,6 +26,14 @@ public class RestAuthControllerImpl implements IRestAuthController{
 	public DtoUser register(@Valid @RequestBody AuthRequest request) {
 		
 		return authService.register(request);
+	}
+	
+	// SecurityConfig 'de filitre dışı URL 'si olmasına dikkat et.
+	@PostMapping("/authenticate")
+	@Override
+	public AuthResponse authenticate(@Valid @RequestBody AuthRequest request) {
+		
+		return authService.authenticate(request);
 	}
 
 }

@@ -32,7 +32,7 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf().disable()
 		.authorizeHttpRequests(request -> 
-		request.requestMatchers(AUTHENTICATE, REGISTER) // authenticate ve register adresine bir istek gelirse
+		request.requestMatchers(REGISTER ,AUTHENTICATE) // authenticate ve register adresine bir istek gelirse
 		.permitAll() // filitre katmanını görmezden gelerek al
 		.anyRequest() //Bu işlemin dışında kalmışları ...
 		.authenticated()) //... filitre içerisinden geçir.

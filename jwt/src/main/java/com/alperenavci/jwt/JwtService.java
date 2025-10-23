@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -18,24 +20,24 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtService {
 	
-	public static final String SECRET_KEY = "TjfDGy1YrySiX8cLt0Dq5IHyHl//SUD+54aJOh5uheY=";
+	public static final String SECRET_KEY = "5N+6yAw9UJlZGIE3ivXxkQlxnb9BauSkvcdSJ447DQE=";
 	
 	// Token üretir
 	public String generateToken(UserDetails userDetails) {
 		
 		//Token 'e Map eklemeye örnek:
-		Map<String, String> claimsMap = new HashMap<>();
-		claimsMap.put("role", "ADMIN");
+		//Map<String, String> claimsMap = new HashMap<>();
+		//claimsMap.put("role", "ADMIN");
 		
 		// Jwts: dependency ile gelen bir sınıf
 		// builder, sınıfın nesnesini oluşturur. 
 		// Diğer metotlar sürekli kendi sınıfını döndüğü için zincirleme set yapılıyor.
 		return Jwts.builder()
 		.setSubject(userDetails.getUsername()) // Token içindeki Username 'yi set eder.
-		.setClaims(claimsMap) // Token 'e map eklemek
+		//.setClaims(claimsMap) // Token 'e map eklemek
 		.setIssuedAt(new Date()) // Tokenin oluşturulma zamanına erişip Jwts 'ye atar.
 		.setExpiration(new Date(System.currentTimeMillis() + 1000*60*60*2)) // Token bitiş süresidir. milisaniye cinsinden girilir.
-		.signWith(getKey(), SignatureAlgorithm.ES256) //Token oluşurken ve çözerken kullanılan bir key 'e ihtiyaç var.
+		.signWith(getKey(), SignatureAlgorithm.HS256) //Token oluşurken ve çözerken kullanılan bir key 'e ihtiyaç var.
 		.compact();
 	}
 	
