@@ -19,6 +19,7 @@ public class SecurityConfig {
 	
 	public static final String AUTHENTICATE = "/authenticate";
 	public static final String REGISTER = "/register";
+	public static final String REFRESHTOKEN = "/refreshToken";
 	
 	// AppConfig 'in metodunun bean 'ını enjekte ettik
 	@Autowired
@@ -36,7 +37,7 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf().disable()
 		.authorizeHttpRequests(request -> 
-		request.requestMatchers(REGISTER ,AUTHENTICATE) // authenticate ve register adresine bir istek gelirse
+		request.requestMatchers(REGISTER ,AUTHENTICATE, REFRESHTOKEN) // authenticate ve register adresine bir istek gelirse
 		.permitAll() // filitre katmanını görmezden gelerek al
 		.anyRequest() //Bu işlemin dışında kalmışları ...
 		.authenticated()) //... filitre içerisinden geçir.

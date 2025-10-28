@@ -11,7 +11,9 @@ import com.alperenavci.controller.IRestAuthController;
 import com.alperenavci.dto.DtoUser;
 import com.alperenavci.jwt.AuthRequest;
 import com.alperenavci.jwt.AuthResponse;
+import com.alperenavci.jwt.RefreshTokenRequest;
 import com.alperenavci.service.IAuthService;
+import com.alperenavci.service.IRefreshTokenService;
 
 import jakarta.validation.Valid;
 
@@ -20,6 +22,10 @@ public class RestAuthControllerImpl implements IRestAuthController{
 
 	@Autowired
 	private IAuthService authService;
+	
+	@Autowired
+	private IRefreshTokenService refreshTokenService;
+	
 	
 	@PostMapping("/register")
 	@Override
@@ -34,6 +40,13 @@ public class RestAuthControllerImpl implements IRestAuthController{
 	public AuthResponse authenticate(@Valid @RequestBody AuthRequest request) {
 		
 		return authService.authenticate(request);
+	}
+	
+	@PostMapping("/refreshToken")
+	@Override
+	public AuthResponse refreshToken(@RequestBody RefreshTokenRequest request) {
+		
+		return refreshTokenService.refreshToken(request);
 	}
 
 }
