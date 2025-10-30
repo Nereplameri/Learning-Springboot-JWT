@@ -25,7 +25,6 @@ public class RefreshTokenServiceImpl implements IRefreshTokenService{
 	@Autowired
 	private JwtService jwtService;
 	
-	@Autowired
 	private RefreshToken createRefreshToken(User user) {
 		RefreshToken refreshToken = new RefreshToken();
 		refreshToken.setRefreshToken(UUID.randomUUID().toString());

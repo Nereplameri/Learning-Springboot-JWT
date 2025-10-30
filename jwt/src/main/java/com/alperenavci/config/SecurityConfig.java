@@ -20,6 +20,11 @@ public class SecurityConfig {
 	public static final String AUTHENTICATE = "/authenticate";
 	public static final String REGISTER = "/register";
 	public static final String REFRESHTOKEN = "/refreshToken";
+	public static final String[] SWAGGER_PATH = {
+			"/swagger-ui/**",
+			"/v3/api-docs/**",
+			"/swagger-ui.html"
+	};
 	
 	// AppConfig 'in metodunun bean 'ını enjekte ettik
 	@Autowired
@@ -39,6 +44,7 @@ public class SecurityConfig {
 		.authorizeHttpRequests(request -> 
 		request.requestMatchers(REGISTER ,AUTHENTICATE, REFRESHTOKEN) // authenticate ve register adresine bir istek gelirse
 		.permitAll() // filitre katmanını görmezden gelerek al
+		.requestMatchers(SWAGGER_PATH).permitAll()
 		.anyRequest() //Bu işlemin dışında kalmışları ...
 		.authenticated()) //... filitre içerisinden geçir.
 		.exceptionHandling().authenticationEntryPoint(authEntryPoint).and()
